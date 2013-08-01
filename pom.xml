@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.tarent.ei.qa</groupId>
+    <artifactId>ei-test-support</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>Enterprise Integration Test Support</name>
+
+    <description>Framework to write test for Enterprise Integration projects. This artifact provides serveral clients for testing various interfaces of a EI project. It also adds dependencies for writing tests with Groovy/Spock/Geb.</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <java.version>1.7</java.version>
+        
+        <groovy.version>2.1.1</groovy.version>
+        <groovy.eclipse.compiler.version>2.7.0-01</groovy.eclipse.compiler.version>
+        <spock.version>0.7-groovy-2.0</spock.version>
+        <objenesis.version>1.3</objenesis.version>
+        <cglib.version>2.2.2</cglib.version>
+        <geb.version>0.9.0-RC-1</geb.version>
+        <selenium.version>2.29.1</selenium.version>
+        <jsch.version>0.1.48</jsch.version>
+        <jersey.version>1.12</jersey.version>
+        <mail.version>1.4.4</mail.version>
+        <httpclient.version>4.2.1</httpclient.version>
+    </properties>
+
+    <licenses>
+        <license>
+            <name>GNU AFFERO GENERAL PUBLIC LICENSE</name>
+            <url>http://www.gnu.org/licenses/agpl-3.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>mkutz</id>
+            <name>Michael Kutz</name>
+            <email>dev@michael-kutz.de</email>
+            <timezone>+1</timezone>
+            <roles>
+                <role>developer</role>
+                <role>tester</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <build>
+
+        <sourceDirectory>src/main/groovy</sourceDirectory>
+        <testSourceDirectory>src/test/groovy</testSourceDirectory>
+
+        <plugins>
+
+            <!-- Configure the compiler plugin for Groovy -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <compilerId>groovy-eclipse-compiler</compilerId>
+                    <verbose>false</verbose>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-compiler</artifactId>
+                        <version>${groovy.eclipse.compiler.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- at this time Spock does not support Maven 3, this is the workaround, later we can use 
+                the Spock plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Spec.java</include>
+                    </includes>
+                    <systemPropertyVariables>
+                        <geb.build.baseUrl>${remoteTestUri}</geb.build.baseUrl>
+                        <geb.build.reportsDir>${project.basedir}/target/test-reports/geb</geb.build.reportsDir>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/src/main/groovy</source>
+                                <source>${basedir}/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/src/test/groovy</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Eclipse support -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <additionalProjectnatures>
+                        <projectnature>org.eclipse.jdt.groovy.core.groovyNature</projectnature>
+                    </additionalProjectnatures>
+                    <!-- Source includes is necessary to allow groovy files in the java folder, else 
+                        eclipse will throw a filtering exception -->
+                    <sourceIncludes>
+                        <sourceInclude>**/*.groovy</sourceInclude>
+                    </sourceIncludes>
+                    <!-- Download sources will make maven download and attach source files where available -->
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+
+            <!-- check license headers for all files in verify phase -->
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.9.0</version>
+                <configuration>
+                    <header>${basedir}/src/etc/header.txt</header>
+                    <strictCheck>false</strictCheck>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- code coverage analysis -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>central-repository</id>
+            <name>Central Repository for Maven</name>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>evolvis-repository</id>
+            <name>evolvis Maven2 Repository</name>
+            <url>http://maven-repo.evolvis.org/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
+        </dependency>
+
+        <!-- Spock: general groovy testing framework -->
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+            <version>${spock.version}</version>
+        </dependency>
+
+        <!-- CGlib: to mock concrete classes within Spock -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>${cglib.version}</version>
+        </dependency>
+
+        <!-- Objenesis: to mock classes without a constructor within Spock -->
+        <dependency>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
+            <version>${objenesis.version}</version>
+        </dependency>
+
+        <!-- Geb & Selenium: framework for browser verification -->
+        <dependency>
+            <groupId>org.gebish</groupId>
+            <artifactId>geb-spock</artifactId>
+            <version>${geb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+
+        <!-- JSch: needed for the SSH test client -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${jsch.version}</version>
+        </dependency>
+
+        <!-- Jersey: needed for the REST test client -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <!-- SLF4J: needed for log test appender -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+
+        <!-- Java Mail: needed for mail test clients -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail.version}</version>
+        </dependency>
+
+        <!-- Apache HTTP client: needed for HTTP test client -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+
+        <!-- Tag Soup: needed for HTTP test client's getHtmlBody feature -->
+        <dependency>
+            <groupId>org.ccil.cowan.tagsoup</groupId>
+            <artifactId>tagsoup</artifactId>
+            <version>1.2</version>
+        </dependency>
+    </dependencies>
+</project>
