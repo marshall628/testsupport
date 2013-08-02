@@ -4,37 +4,39 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.tarent.ei.qa</groupId>
-    <artifactId>ei-test-support</artifactId>
+    <groupId>com.github.mkutz.testsupport</groupId>
+    <artifactId>test-support</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <name>Enterprise Integration Test Support</name>
+    <name>Test Support</name>
 
-    <description>Framework to write test for Enterprise Integration projects. This artifact provides serveral clients for testing various interfaces of a EI project. It also adds dependencies for writing tests with Groovy/Spock/Geb.</description>
+    <description>Framework to write test for whole system tests. This artifact provides several clients for testing various interfaces of a system. It also adds dependencies for writing tests with Groovy/Spock/Geb.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <java.version>1.7</java.version>
         
-        <groovy.version>2.1.1</groovy.version>
+        <groovy.version>2.1.6</groovy.version>
         <groovy.eclipse.compiler.version>2.7.0-01</groovy.eclipse.compiler.version>
         <spock.version>0.7-groovy-2.0</spock.version>
         <objenesis.version>1.3</objenesis.version>
         <cglib.version>2.2.2</cglib.version>
-        <geb.version>0.9.0-RC-1</geb.version>
-        <selenium.version>2.29.1</selenium.version>
-        <jsch.version>0.1.48</jsch.version>
-        <jersey.version>1.12</jersey.version>
-        <mail.version>1.4.4</mail.version>
-        <httpclient.version>4.2.1</httpclient.version>
+        <geb.version>0.9.0</geb.version>
+        <selenium.version>2.33.0</selenium.version>
+        <jsch.version>0.1.50</jsch.version>
+        <jersey.version>1.17.1</jersey.version>
+        <slf4j.version>1.7.5</slf4j.version>
+        <mail.version>1.4.7</mail.version>
+        <httpclient.version>4.2.5</httpclient.version>
+        <tagsoup.version>1.2.1</tagsoup.version>
     </properties>
 
     <licenses>
         <license>
-            <name>GNU AFFERO GENERAL PUBLIC LICENSE</name>
-            <url>http://www.gnu.org/licenses/agpl-3.0.txt</url>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -62,7 +64,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.5.1</version>
                 <extensions>true</extensions>
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
@@ -85,7 +87,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.15</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
@@ -134,7 +136,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.9</version>
                 <configuration>
                     <additionalProjectnatures>
                         <projectnature>org.eclipse.jdt.groovy.core.groovyNature</projectnature>
@@ -158,6 +160,7 @@
                 <configuration>
                     <header>${basedir}/src/etc/header.txt</header>
                     <strictCheck>false</strictCheck>
+                    <basedir>src</basedir>
                 </configuration>
                 <executions>
                     <execution>
@@ -258,12 +261,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.6</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.6.1</version>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- Java Mail: needed for mail test clients -->
@@ -284,7 +287,7 @@
         <dependency>
             <groupId>org.ccil.cowan.tagsoup</groupId>
             <artifactId>tagsoup</artifactId>
-            <version>1.2</version>
+            <version>${tagsoup.version}</version>
         </dependency>
     </dependencies>
 </project>
