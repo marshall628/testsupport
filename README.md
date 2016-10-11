@@ -8,7 +8,7 @@ To use this just include the following dependency to your pom.xml:
 
 ```xml
 <dependency>
-    <groupId>de.meinestadt.test</groupId>
+    <groupId>com.github.mkutz.testsupport</groupId>
     <artifactId>system-test-support</artifactId>
     <version>1.0</version>
 </dependency>
